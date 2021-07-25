@@ -39,6 +39,7 @@ def main():
     print('Model is {}'.format(model.__class__.__name__))
     print('Model parameters: {:.2f}M'.format(sum(p.numel() for p in model.parameters()) / 1e6))
     print(model)
+    model = torch.nn.DataParallel(model)
     model = model.cuda()
    
     # CUDNN
@@ -125,7 +126,7 @@ def main():
                     'epoch': epoch + 1}, p['pretext_checkpoint'])
 
     # Save final model
-    torch.save(model.state_dict(), p['pretext_model'])
+    torch.save(model.module.state_dict(), p['pretext_model'])
 
     # Mine the topk nearest neighbors at the very end (Train) 
     # These will be served as input to the SCAN loss.
